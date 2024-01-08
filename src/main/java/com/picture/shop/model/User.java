@@ -37,6 +37,9 @@ public class User {
             inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id")
     )
     private List<Role> roles = new ArrayList<>();
+    @OneToOne
+    @JoinTable(name = "client_id")
+    private Client client;
 
     public User(String email, String password) {
         this.email = email;
