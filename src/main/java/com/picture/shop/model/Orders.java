@@ -34,6 +34,9 @@ public class Orders {
     @NotNull
     @NotBlank
     private Integer totalPrice;
+    @ManyToOne
+    @JoinColumn(name = "client_id")
+    private Client client;
 
     public Orders(Integer orderNumber, Date dateOfOrder, OrderStatus status, Integer totalPrice) {
         this.orderNumber = orderNumber;
