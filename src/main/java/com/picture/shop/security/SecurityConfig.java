@@ -14,16 +14,18 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 @EnableWebMvc
 public class SecurityConfig {
     @Bean
-    public BCryptPasswordEncoder passwordEncoder(){
+    public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests( auth ->
+                .authorizeHttpRequests(auth ->
                         auth
                                 .requestMatchers("/").permitAll()
+                                .requestMatchers("/register").permitAll()
                                 .anyRequest().authenticated()
                 );
 

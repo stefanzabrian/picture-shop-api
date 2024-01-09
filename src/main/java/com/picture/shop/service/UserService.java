@@ -1,9 +1,13 @@
 package com.picture.shop.service;
 
+import com.picture.shop.controller.dto.RegisterDto;
 import com.picture.shop.model.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
-public interface UserService extends UserDetailsService {
+import java.util.Optional;
 
-    void create(User newUser);
+public interface UserService extends UserDetailsService {
+    Optional<User> findByEmail(String email);
+
+    void create(RegisterDto newUser);
 }

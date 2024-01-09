@@ -1,5 +1,6 @@
 package com.picture.shop.service;
 
+import com.picture.shop.controller.dto.RegisterDto;
 import com.picture.shop.model.Role;
 import com.picture.shop.model.User;
 import com.picture.shop.repository.UserRepository;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -43,7 +45,21 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void create(User newUser) {
+    public Optional<User> findByEmail(String email) {
+        return userRepository.findByEmail(email);
+    }
+
+    @Override
+    public void create(RegisterDto newUser) {
+        if (newUser.getEmail().isEmpty() && newUser.getEmail().isBlank()) {
+            throw new IllegalArgumentException("Email must not be Empty or Blank!");
+        }
+        if (newUser.getPassword().isEmpty() && newUser.getPassword().isBlank()) {
+            throw new IllegalArgumentException("Password must not be Empty or Blank!");
+        }
+        if (newUser.getRoles().isEmpty()) {
+            throw new IllegalArgumentException("Roles must not be Empty");
+        }
         User user = new User
                 (
                         newUser.getEmail(),
