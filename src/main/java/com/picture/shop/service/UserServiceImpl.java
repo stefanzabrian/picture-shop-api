@@ -41,4 +41,16 @@ public class UserServiceImpl implements UserService {
     private Collection<GrantedAuthority> mapRolesToAuthorities(List<Role> roles) {
         return roles.stream().map(role -> new SimpleGrantedAuthority(role.getName())).collect(Collectors.toSet());
     }
+
+    @Override
+    public void create(User newUser) {
+        User user = new User
+                (
+                        newUser.getEmail(),
+                        passwordEncoder.encode(newUser.getPassword())
+                );
+        user.setRoles(newUser.getRoles());
+
+        userRepository.save(user);
+    }
 }
