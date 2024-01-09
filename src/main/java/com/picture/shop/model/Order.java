@@ -15,7 +15,7 @@ import java.util.Date;
 @NoArgsConstructor
 @Setter
 @Getter
-public class Orders {
+public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -38,7 +38,7 @@ public class Orders {
     @JoinColumn(name = "client_id")
     private Client client;
 
-    public Orders(Integer orderNumber, Date dateOfOrder, OrderStatus status, Integer totalPrice) {
+    public Order(Integer orderNumber, Date dateOfOrder, OrderStatus status, Integer totalPrice) {
         this.orderNumber = orderNumber;
         this.dateOfOrder = dateOfOrder;
         this.status = status;
