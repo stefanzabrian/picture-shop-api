@@ -4,6 +4,7 @@ import com.picture.shop.controller.dto.RegisterDto;
 import com.picture.shop.model.Role;
 import com.picture.shop.model.User;
 import com.picture.shop.repository.UserRepository;
+import jakarta.persistence.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -11,6 +12,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
 import java.util.List;
@@ -21,11 +23,19 @@ import java.util.stream.Collectors;
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder passwordEncoder;
+    @PersistenceContext
+    private final EntityManager entityManager;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, BCryptPasswordEncoder passwordEncoder) {
+    public UserServiceImpl
+            (
+                    UserRepository userRepository,
+                    BCryptPasswordEncoder passwordEncoder,
+                    EntityManager entityManager) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+
+        this.entityManager = entityManager;
     }
 
     @Override
@@ -68,5 +78,18 @@ public class UserServiceImpl implements UserService {
         user.setRoles(newUser.getRoles());
 
         userRepository.save(user);
+    }
+
+    @Override
+    @Transactional
+    public void deleteUser(int userId) {
+        User userToDelete = entityManager.find(User.class, userId);
+
+        if(userToDelete !=null){
+            userToDelete.getRoles().clear();
+            entityManager.remove(userToDelete);
+        } else {
+            throw new EntityNotFoundException(String.format("User with id %d not found", userId));
+        }
     }
 }

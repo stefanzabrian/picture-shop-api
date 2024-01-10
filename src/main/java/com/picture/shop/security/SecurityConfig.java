@@ -7,9 +7,11 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 @Configuration
+@EnableTransactionManagement
 @EnableWebSecurity
 @EnableWebMvc
 public class SecurityConfig {
@@ -26,6 +28,7 @@ public class SecurityConfig {
                         auth
                                 .requestMatchers("/").permitAll()
                                 .requestMatchers("/register").permitAll()
+                                .requestMatchers("/user/**").permitAll()
                                 .anyRequest().authenticated()
                 );
 

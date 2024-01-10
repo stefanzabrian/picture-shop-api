@@ -10,4 +10,5 @@ public interface UserService extends UserDetailsService {
     Optional<User> findByEmail(String email);
 
     void create(RegisterDto newUser);
+    void deleteUser(int userId);
 }
