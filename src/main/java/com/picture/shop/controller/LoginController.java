@@ -5,6 +5,7 @@ import com.picture.shop.controller.dto.LoginDto;
 import com.picture.shop.repository.RoleRepository;
 import com.picture.shop.security.jwt.JwtGenerator;
 import com.picture.shop.service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -37,7 +38,7 @@ public class LoginController {
 
     @RequestMapping("/login")
     public ResponseEntity<AuthResponseDto> login(
-            @RequestBody LoginDto loginDto
+           @Valid @RequestBody LoginDto loginDto
     ) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
