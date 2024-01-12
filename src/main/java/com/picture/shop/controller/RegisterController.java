@@ -28,13 +28,13 @@ public class RegisterController {
     }
 
     @PostMapping
-    public ResponseEntity<?> registerUser(@RequestBody @Valid RegisterDto registerDto) {
+    public ResponseEntity<?> registerUser(@Valid @RequestBody RegisterDto registerDto) {
         if (userService.findByEmail(registerDto.getEmail()).isPresent()) {
-            return new ResponseEntity<>("Username is taken!", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("Username is taken!", HttpStatus.CONFLICT);
         }
         RegisterDto newUser = new RegisterDto();
-        newUser.setEmail(registerDto.getEmail());
-        newUser.setPassword(registerDto.getPassword());
+        newUser.setEmail(registerDto.getEmail().trim());
+        newUser.setPassword(registerDto.getPassword().trim());
 
         if (roleRepository.findByName("USER").isEmpty()) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("User role not found in DataBase");
