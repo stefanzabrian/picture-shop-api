@@ -45,7 +45,6 @@ public class SecurityConfig {
     }
 
     @Bean
-    @Order(2)
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
@@ -55,6 +54,7 @@ public class SecurityConfig {
                                 .requestMatchers("/error").permitAll()
                                 .requestMatchers("/register").permitAll()
                                 .requestMatchers("/login").permitAll()
+                                .requestMatchers("/logout").permitAll()
                                 .anyRequest().authenticated()
                 );
         http
