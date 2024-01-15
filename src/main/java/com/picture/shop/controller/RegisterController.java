@@ -75,4 +75,28 @@ public class RegisterController {
 
         return new ResponseEntity<>("Moderator registered successfully!", HttpStatus.CREATED);
     }
+    @PostMapping("/admin")
+    public ResponseEntity<?> registerAdmin(@Valid @RequestBody RegisterDto registerDto){
+        if (userService.findByEmail(registerDto.getEmail().trim()).isPresent()) {
+            return new ResponseEntity<>("Username is taken!", HttpStatus.CONFLICT);
+        }
+
+        RegisterDto newUser = new RegisterDto();
+        newUser.setEmail(registerDto.getEmail());
+        newUser.setPassword(registerDto.getPassword());
+
+        if (roleRepository.findByName("ADMIN").isEmpty()) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Admin role not found in DataBase");
+        }
+        Role roles = roleRepository.findByName("ADMIN").get();
+        newUser.setRoles(Collections.singletonList(roles));
+
+        try {
+            userService.create(newUser);
+        } catch (RuntimeException e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+
+        return new ResponseEntity<>("Admin registered successfully!", HttpStatus.CREATED);
+    }
 }

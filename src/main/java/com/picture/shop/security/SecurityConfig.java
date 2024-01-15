@@ -57,6 +57,7 @@ public class SecurityConfig {
                                 .requestMatchers("/error").permitAll()
                                 .requestMatchers("/register").permitAll()
                                 .requestMatchers("/register/moderator").hasAnyAuthority("ADMIN")
+                                .requestMatchers("/register/admin").hasAnyAuthority("ADMIN")
                                 .requestMatchers("/login").permitAll()
                                 .requestMatchers("/logout").permitAll()
                                 .anyRequest().authenticated()
