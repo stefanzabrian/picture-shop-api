@@ -23,6 +23,8 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import java.util.Arrays;
 
+import static org.springframework.security.config.Customizer.withDefaults;
+
 @Configuration
 @EnableTransactionManagement
 @EnableWebSecurity
@@ -45,6 +47,7 @@ public class SecurityConfig {
     }
 
     @Bean
+    @Order(2)
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
@@ -53,6 +56,7 @@ public class SecurityConfig {
                                 .requestMatchers("/").permitAll()
                                 .requestMatchers("/error").permitAll()
                                 .requestMatchers("/register").permitAll()
+                                .requestMatchers("/register/moderator").hasAnyAuthority("ADMIN")
                                 .requestMatchers("/login").permitAll()
                                 .requestMatchers("/logout").permitAll()
                                 .anyRequest().authenticated()

@@ -28,10 +28,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     public UserServiceImpl
-            (
-                    UserRepository userRepository,
-                    BCryptPasswordEncoder passwordEncoder,
-                    EntityManager entityManager) {
+            (UserRepository userRepository,
+             BCryptPasswordEncoder passwordEncoder,
+             EntityManager entityManager) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
 
@@ -85,7 +84,7 @@ public class UserServiceImpl implements UserService {
     public void deleteUser(int userId) {
         User userToDelete = entityManager.find(User.class, userId);
 
-        if(userToDelete !=null){
+        if (userToDelete != null) {
             userToDelete.getRoles().clear();
             entityManager.remove(userToDelete);
         } else {

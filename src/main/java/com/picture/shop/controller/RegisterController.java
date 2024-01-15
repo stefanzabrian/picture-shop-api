@@ -29,7 +29,7 @@ public class RegisterController {
 
     @PostMapping
     public ResponseEntity<?> registerUser(@Valid @RequestBody RegisterDto registerDto) {
-        if (userService.findByEmail(registerDto.getEmail()).isPresent()) {
+        if (userService.findByEmail(registerDto.getEmail().trim()).isPresent()) {
             return new ResponseEntity<>("Username is taken!", HttpStatus.CONFLICT);
         }
         RegisterDto newUser = new RegisterDto();
@@ -45,9 +45,34 @@ public class RegisterController {
         try {
             userService.create(newUser);
         } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
 
         return new ResponseEntity<>("User registered successfully!", HttpStatus.CREATED);
+    }
+
+    @PostMapping("/moderator")
+    public ResponseEntity<?> registerModerator(@Valid @RequestBody RegisterDto registerDto){
+        if (userService.findByEmail(registerDto.getEmail().trim()).isPresent()) {
+            return new ResponseEntity<>("Username is taken!", HttpStatus.CONFLICT);
+        }
+
+        RegisterDto newUser = new RegisterDto();
+        newUser.setEmail(registerDto.getEmail());
+        newUser.setPassword(registerDto.getPassword());
+
+        if (roleRepository.findByName("MODERATOR").isEmpty()) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Moderator role not found in DataBase");
+        }
+        Role roles = roleRepository.findByName("MODERATOR").get();
+        newUser.setRoles(Collections.singletonList(roles));
+
+        try {
+            userService.create(newUser);
+        } catch (RuntimeException e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+
+        return new ResponseEntity<>("Moderator registered successfully!", HttpStatus.CREATED);
     }
 }
