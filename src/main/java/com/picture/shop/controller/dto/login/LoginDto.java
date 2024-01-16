@@ -1,4 +1,4 @@
-package com.picture.shop.controller.dto;
+package com.picture.shop.controller.dto.login;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

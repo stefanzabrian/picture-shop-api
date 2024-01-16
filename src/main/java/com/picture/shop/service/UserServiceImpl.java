@@ -1,6 +1,6 @@
 package com.picture.shop.service;
 
-import com.picture.shop.controller.dto.RegisterDto;
+import com.picture.shop.controller.dto.register.RegisterDto;
 import com.picture.shop.model.Role;
 import com.picture.shop.model.User;
 import com.picture.shop.repository.UserRepository;

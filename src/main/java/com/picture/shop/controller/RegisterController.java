@@ -1,6 +1,6 @@
 package com.picture.shop.controller;
 
-import com.picture.shop.controller.dto.RegisterDto;
+import com.picture.shop.controller.dto.register.RegisterDto;
 import com.picture.shop.model.Role;
 import com.picture.shop.service.RoleService;
 import com.picture.shop.service.UserService;

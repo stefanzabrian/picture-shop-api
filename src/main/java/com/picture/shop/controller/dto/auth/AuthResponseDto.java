@@ -1,4 +1,4 @@
-package com.picture.shop.controller.dto;
+package com.picture.shop.controller.dto.auth;
 
 import lombok.Getter;
 import lombok.Setter;

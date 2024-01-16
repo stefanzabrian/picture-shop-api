@@ -1,7 +1,7 @@
 package com.picture.shop.controller;
 
-import com.picture.shop.controller.dto.AuthResponseDto;
-import com.picture.shop.controller.dto.LoginDto;
+import com.picture.shop.controller.dto.auth.AuthResponseDto;
+import com.picture.shop.controller.dto.login.LoginDto;
 import com.picture.shop.security.jwt.JwtGenerator;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
