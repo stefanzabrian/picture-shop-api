@@ -16,7 +16,7 @@ public class PictureServiceImpl implements PictureService {
     }
 
     @Override
-    public void create(PictureDto newPicture) {
+    public Picture create(PictureDto newPicture) {
         if (newPicture.getName().isBlank() && newPicture.getName().isEmpty()) {
             throw new IllegalArgumentException("name must not be empty or blank");
         }
@@ -35,7 +35,8 @@ public class PictureServiceImpl implements PictureService {
         try {
             pictureRepository.save(picture);
         } catch (Exception e) {
-            throw new RuntimeException("Error creating the user", e);
+            throw new RuntimeException(e.getMessage());
         }
+        return picture;
     }
 }

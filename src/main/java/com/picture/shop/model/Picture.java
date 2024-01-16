@@ -23,7 +23,6 @@ public class Picture {
     private String name;
     @Column(name = "price")
     @NotNull
-    @NotBlank
     private Integer price;
     @Column(name = "description", columnDefinition = "LONGTEXT")
     @NotNull

@@ -58,6 +58,7 @@ public class SecurityConfig {
                                 .requestMatchers("/register").permitAll()
                                 .requestMatchers("/register/moderator").hasAnyAuthority("ADMIN")
                                 .requestMatchers("/register/admin").hasAnyAuthority("ADMIN")
+                                .requestMatchers("/picture/**").hasAnyAuthority("ADMIN","MODERATOR")
                                 .requestMatchers("/login").permitAll()
                                 .requestMatchers("/logout").permitAll()
                                 .anyRequest().authenticated()
