@@ -2,9 +2,10 @@ package com.picture.shop.controller;
 
 import com.picture.shop.controller.dto.RegisterDto;
 import com.picture.shop.model.Role;
-import com.picture.shop.repository.RoleRepository;
+import com.picture.shop.service.RoleService;
 import com.picture.shop.service.UserService;
 import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -20,11 +21,12 @@ import java.util.Collections;
 @Validated
 public class RegisterController {
     private final UserService userService;
-    private final RoleRepository roleRepository;
+    private final RoleService roleService;
 
-    public RegisterController(UserService userService, RoleRepository roleRepository) {
+    @Autowired
+    public RegisterController(UserService userService, RoleService roleService) {
         this.userService = userService;
-        this.roleRepository = roleRepository;
+        this.roleService = roleService;
     }
 
     @PostMapping
@@ -36,10 +38,10 @@ public class RegisterController {
         newUser.setEmail(registerDto.getEmail().trim());
         newUser.setPassword(registerDto.getPassword().trim());
 
-        if (roleRepository.findByName("USER").isEmpty()) {
+        if (roleService.findByName("USER").isEmpty()) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("User role not found in DataBase");
         }
-        Role role = roleRepository.findByName("USER").get();
+        Role role = roleService.findByName("USER").get();
         newUser.setRoles(Collections.singletonList(role));
 
         try {
@@ -52,7 +54,7 @@ public class RegisterController {
     }
 
     @PostMapping("/moderator")
-    public ResponseEntity<?> registerModerator(@Valid @RequestBody RegisterDto registerDto){
+    public ResponseEntity<?> registerModerator(@Valid @RequestBody RegisterDto registerDto) {
         if (userService.findByEmail(registerDto.getEmail().trim()).isPresent()) {
             return new ResponseEntity<>("Username is taken!", HttpStatus.CONFLICT);
         }
@@ -61,22 +63,23 @@ public class RegisterController {
         newUser.setEmail(registerDto.getEmail());
         newUser.setPassword(registerDto.getPassword());
 
-        if (roleRepository.findByName("MODERATOR").isEmpty()) {
+        if (roleService.findByName("MODERATOR").isEmpty()) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Moderator role not found in DataBase");
         }
-        Role roles = roleRepository.findByName("MODERATOR").get();
+        Role roles = roleService.findByName("MODERATOR").get();
         newUser.setRoles(Collections.singletonList(roles));
 
         try {
             userService.create(newUser);
-        } catch (RuntimeException e){
+        } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
 
         return new ResponseEntity<>("Moderator registered successfully!", HttpStatus.CREATED);
     }
+
     @PostMapping("/admin")
-    public ResponseEntity<?> registerAdmin(@Valid @RequestBody RegisterDto registerDto){
+    public ResponseEntity<?> registerAdmin(@Valid @RequestBody RegisterDto registerDto) {
         if (userService.findByEmail(registerDto.getEmail().trim()).isPresent()) {
             return new ResponseEntity<>("Username is taken!", HttpStatus.CONFLICT);
         }
@@ -85,15 +88,15 @@ public class RegisterController {
         newUser.setEmail(registerDto.getEmail());
         newUser.setPassword(registerDto.getPassword());
 
-        if (roleRepository.findByName("ADMIN").isEmpty()) {
+        if (roleService.findByName("ADMIN").isEmpty()) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Admin role not found in DataBase");
         }
-        Role roles = roleRepository.findByName("ADMIN").get();
+        Role roles = roleService.findByName("ADMIN").get();
         newUser.setRoles(Collections.singletonList(roles));
 
         try {
             userService.create(newUser);
-        } catch (RuntimeException e){
+        } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
 

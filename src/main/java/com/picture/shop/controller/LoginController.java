@@ -2,9 +2,7 @@ package com.picture.shop.controller;
 
 import com.picture.shop.controller.dto.AuthResponseDto;
 import com.picture.shop.controller.dto.LoginDto;
-import com.picture.shop.repository.RoleRepository;
 import com.picture.shop.security.jwt.JwtGenerator;
-import com.picture.shop.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,19 +18,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class LoginController {
     private final AuthenticationManager authenticationManager;
-    private final RoleRepository roleRepository;
-    private final UserService userService;
     private final JwtGenerator jwtGenerator;
 
     @Autowired
     public LoginController(
             AuthenticationManager authenticationManager,
-            RoleRepository roleRepository,
-            UserService userService,
             JwtGenerator jwtGenerator) {
         this.authenticationManager = authenticationManager;
-        this.roleRepository = roleRepository;
-        this.userService = userService;
         this.jwtGenerator = jwtGenerator;
     }
 
