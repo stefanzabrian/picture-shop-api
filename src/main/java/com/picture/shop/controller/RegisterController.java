@@ -32,7 +32,7 @@ public class RegisterController {
     @PostMapping
     public ResponseEntity<?> registerUser(@Valid @RequestBody RegisterDto registerDto) {
         if (userService.findByEmail(registerDto.getEmail().trim()).isPresent()) {
-            return new ResponseEntity<>("Username is taken!", HttpStatus.CONFLICT);
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Email already exists");
         }
         RegisterDto newUser = new RegisterDto();
         newUser.setEmail(registerDto.getEmail().trim());
@@ -50,7 +50,7 @@ public class RegisterController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
 
-        return new ResponseEntity<>("User registered successfully!", HttpStatus.CREATED);
+        return ResponseEntity.status(HttpStatus.CREATED).body(newUser);
     }
 
     @PostMapping("/moderator")
