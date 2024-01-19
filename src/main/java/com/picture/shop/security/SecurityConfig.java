@@ -23,7 +23,6 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import java.util.Arrays;
 
-import static org.springframework.security.config.Customizer.withDefaults;
 
 @Configuration
 @EnableTransactionManagement
@@ -53,7 +52,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth ->
                         auth
-                                .requestMatchers("/").permitAll()
+
                                 .requestMatchers("/error").permitAll()
                                 .requestMatchers("/register").permitAll()
                                 .requestMatchers("/register/moderator").hasAnyAuthority("ADMIN")

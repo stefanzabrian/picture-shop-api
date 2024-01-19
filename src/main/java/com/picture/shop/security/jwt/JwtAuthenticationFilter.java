@@ -1,11 +1,15 @@
 package com.picture.shop.security.jwt;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.picture.shop.controller.exception.ErrorDetails;
+import com.picture.shop.controller.exception.JwtValidationException;
 import com.picture.shop.service.UserService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -15,6 +19,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Date;
 
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
@@ -29,18 +34,33 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             HttpServletRequest request,
             HttpServletResponse response,
             FilterChain filterChain) throws ServletException, IOException {
-        String token = getJwtFromRequest(request);
+        try {
+            String token = getJwtFromRequest(request);
 
-        if (StringUtils.hasText(token)) {
-            if (jwtGenerator.validateToken(token)) {
-                String email = jwtGenerator.getEmailFromJWT(token);
-                UserDetails userDetails = userService.loadUserByUsername(email);
-                UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-                authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+            if (StringUtils.hasText(token)) {
+                if (jwtGenerator.validateToken(token)) {
+                    String email = jwtGenerator.getEmailFromJWT(token);
+                    UserDetails userDetails = userService.loadUserByUsername(email);
+                    UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                    authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                    SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+                }
             }
+            filterChain.doFilter(request, response);
+        } catch (JwtValidationException e) {
+            handleJwtException(response, e);
         }
-        filterChain.doFilter(request, response);
+    }
+
+    private void handleJwtException(HttpServletResponse response, JwtValidationException e) throws IOException {
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+
+        ErrorDetails errorDetails = new ErrorDetails(new Date(), e.getMessage(), "JWT validation failed");
+        String json = new ObjectMapper().writeValueAsString(errorDetails);
+        response.getWriter().write(json);
+        response.getWriter().flush();
+        response.getWriter().close();
     }
 
     private String getJwtFromRequest(HttpServletRequest request) {

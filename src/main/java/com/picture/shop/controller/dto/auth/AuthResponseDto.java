@@ -8,6 +8,8 @@ import lombok.Setter;
 public class AuthResponseDto {
     private String accessToken;
     private String tokenType = "Bearer ";
+    private String expirationDate;
+
 
     public AuthResponseDto(String accessToken) {
         this.accessToken = accessToken;
