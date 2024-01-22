@@ -1,10 +1,13 @@
 package com.picture.shop.service;
 
 import com.picture.shop.controller.dto.picture.PictureDto;
+import com.picture.shop.controller.exception.ResourceNotFoundException;
 import com.picture.shop.model.Picture;
 import com.picture.shop.repository.PictureRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class PictureServiceImpl implements PictureService {
@@ -38,5 +41,13 @@ public class PictureServiceImpl implements PictureService {
             throw new RuntimeException(e.getMessage());
         }
         return picture;
+    }
+
+    @Override
+    public List<Picture> findAll() throws ResourceNotFoundException {
+        if ( pictureRepository.findAll().isEmpty()) {
+            throw new ResourceNotFoundException("No Pictures yet");
+        }
+        return pictureRepository.findAll();
     }
 }

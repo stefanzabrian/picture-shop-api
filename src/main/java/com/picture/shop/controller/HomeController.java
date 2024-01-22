@@ -15,7 +15,7 @@ public class HomeController {
         return "Hello, " + principal.getName();
     }
 
-    @PreAuthorize("hasAuthority('SCOME_read')")
+    @PreAuthorize("hasAuthority('SCOPE_read')")
     @GetMapping("/secure")
     public String secure(){
         return "This is secured!";

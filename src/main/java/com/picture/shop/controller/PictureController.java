@@ -1,12 +1,14 @@
 package com.picture.shop.controller;
 
 import com.picture.shop.controller.dto.picture.PictureDto;
+import com.picture.shop.controller.exception.ResourceNotFoundException;
 import com.picture.shop.service.PictureService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -37,5 +39,14 @@ public class PictureController {
         }
 
         return ResponseEntity.status(HttpStatus.CREATED).body(newPicture);
+    }
+
+    @GetMapping("/all")
+    public ResponseEntity<?> getAllPictures(){
+        try {
+            return ResponseEntity.status(HttpStatus.OK).body(pictureService.findAll());
+        } catch (ResourceNotFoundException e ) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
     }
 }
