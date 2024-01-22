@@ -28,6 +28,10 @@ public class Picture {
     @NotNull
     @NotBlank
     private String description;
+    @Column(name = "piture_url", columnDefinition = "LONGTEXT")
+    @NotNull
+    @NotBlank
+    private String pictureUrl;
 
     public Picture(String name, Integer price, String description) {
         this.name = name;

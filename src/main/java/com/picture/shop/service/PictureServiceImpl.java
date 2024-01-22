@@ -29,11 +29,15 @@ public class PictureServiceImpl implements PictureService {
         if (newPicture.getDescription().isBlank() && newPicture.getDescription().isEmpty()) {
             throw new IllegalArgumentException("description must not be empty or blank");
         }
+        if (newPicture.getPictureUrl().isBlank() && newPicture.getPictureUrl().isEmpty()) {
+            throw new IllegalArgumentException("picture url must not be empty or blank");
+        }
 
         Picture picture = new Picture();
         picture.setName(newPicture.getName());
         picture.setPrice(newPicture.getPrice());
         picture.setDescription(newPicture.getDescription());
+        picture.setPictureUrl(newPicture.getPictureUrl());
 
         try {
             pictureRepository.save(picture);
@@ -45,7 +49,7 @@ public class PictureServiceImpl implements PictureService {
 
     @Override
     public List<Picture> findAll() throws ResourceNotFoundException {
-        if ( pictureRepository.findAll().isEmpty()) {
+        if (pictureRepository.findAll().isEmpty()) {
             throw new ResourceNotFoundException("No Pictures yet");
         }
         return pictureRepository.findAll();

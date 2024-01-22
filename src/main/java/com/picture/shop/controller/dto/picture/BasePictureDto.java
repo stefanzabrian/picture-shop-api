@@ -20,4 +20,7 @@ public class BasePictureDto {
     @NotNull(message = "description must be not null")
     @NotBlank(message = "description must not be blank")
     private String description;
+    @NotNull(message = "picture url must be not null")
+    @NotBlank(message = "picture url must not be blank")
+    private String pictureUrl;
 }

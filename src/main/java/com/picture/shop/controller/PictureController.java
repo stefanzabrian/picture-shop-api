@@ -29,6 +29,7 @@ public class PictureController {
         newPicture.setName(pictureDto.getName());
         newPicture.setPrice(pictureDto.getPrice());
         newPicture.setDescription(pictureDto.getDescription());
+        newPicture.setPictureUrl(pictureDto.getPictureUrl());
 
         try {
             newPicture.setId(pictureService.create(newPicture).getId());
@@ -46,7 +47,7 @@ public class PictureController {
         try {
             return ResponseEntity.status(HttpStatus.OK).body(pictureService.findAll());
         } catch (ResourceNotFoundException e ) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(e.getMessage());
         }
     }
 }

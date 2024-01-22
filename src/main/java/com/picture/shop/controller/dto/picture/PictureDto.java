@@ -11,8 +11,8 @@ import lombok.Setter;
 public class PictureDto extends BasePictureDto{
     private Integer id;
 
-    public PictureDto(String name, Integer price, String description, Integer id) {
-        super(name, price, description);
+    public PictureDto(String name, Integer price, String description, String pictureUrl, Integer id) {
+        super(name, price, description,pictureUrl);
         this.id = id;
     }
 }
