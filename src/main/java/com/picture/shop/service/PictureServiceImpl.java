@@ -54,4 +54,11 @@ public class PictureServiceImpl implements PictureService {
         }
         return pictureRepository.findAll();
     }
+
+    @Override
+    public void delete(int id) throws ResourceNotFoundException {
+        pictureRepository.findById(id)
+                .orElseThrow( () -> new ResourceNotFoundException("Picture with id: " + id + "not found"));
+        pictureRepository.deleteById(id);
+    }
 }

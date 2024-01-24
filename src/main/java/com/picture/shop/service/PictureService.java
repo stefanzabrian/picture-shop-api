@@ -9,5 +9,6 @@ import java.util.List;
 public interface PictureService {
     Picture create(PictureDto newPicture);
     List<Picture> findAll() throws ResourceNotFoundException;
+    void delete(int id) throws ResourceNotFoundException;
 
 }
