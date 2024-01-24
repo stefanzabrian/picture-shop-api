@@ -2,6 +2,7 @@ package com.picture.shop.controller;
 
 import com.picture.shop.controller.dto.picture.PictureDto;
 import com.picture.shop.controller.exception.ResourceNotFoundException;
+import com.picture.shop.model.Picture;
 import com.picture.shop.service.PictureService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,5 +56,13 @@ public class PictureController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
         return ResponseEntity.status(HttpStatus.ACCEPTED).body("Picture with id: " + id + "deleted!");
+    }
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getById(@PathVariable(value = "id") int id) {
+        if (pictureService.findById(id).isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Picture with id: " + id + "not found!");
+        }
+        Picture picture = pictureService.findById(id).get();
+        return ResponseEntity.status(HttpStatus.OK).body(picture);
     }
 }

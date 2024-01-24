@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class PictureServiceImpl implements PictureService {
@@ -60,5 +61,10 @@ public class PictureServiceImpl implements PictureService {
         pictureRepository.findById(id)
                 .orElseThrow( () -> new ResourceNotFoundException("Picture with id: " + id + "not found"));
         pictureRepository.deleteById(id);
+    }
+
+    @Override
+    public Optional<Picture> findById(int id) {
+        return pictureRepository.findById(id);
     }
 }
