@@ -12,5 +12,6 @@ public interface PictureService {
     List<Picture> findAll() throws ResourceNotFoundException;
     void delete(int id) throws ResourceNotFoundException;
     Optional<Picture> findById(int id);
+    void update(PictureDto updatedPictureDto) throws ResourceNotFoundException;
 
 }

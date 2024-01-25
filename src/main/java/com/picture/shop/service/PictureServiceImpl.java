@@ -6,6 +6,7 @@ import com.picture.shop.model.Picture;
 import com.picture.shop.repository.PictureRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 import java.util.Optional;
@@ -59,12 +60,36 @@ public class PictureServiceImpl implements PictureService {
     @Override
     public void delete(int id) throws ResourceNotFoundException {
         pictureRepository.findById(id)
-                .orElseThrow( () -> new ResourceNotFoundException("Picture with id: " + id + "not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Picture with id: " + id + "not found"));
         pictureRepository.deleteById(id);
     }
 
     @Override
     public Optional<Picture> findById(int id) {
         return pictureRepository.findById(id);
+    }
+
+    @Override
+    public void update(PictureDto updatedPictureDto) throws ResourceNotFoundException {
+        Picture pictureToBeUpdated = pictureRepository.findById(updatedPictureDto.getId())
+                .orElseThrow(() -> new ResourceNotFoundException("Picture does not exists with id: " + updatedPictureDto.getId()));
+
+        if (updatedPictureDto.getName().isEmpty() ||
+                        updatedPictureDto.getDescription().isEmpty() ||
+                        updatedPictureDto.getPictureUrl().isEmpty() ||
+                updatedPictureDto.getPrice() == 0
+        ) {
+            throw new IllegalArgumentException("name or description or picture url must not be empty or price must not be 0");
+        }
+        pictureToBeUpdated.setName(updatedPictureDto.getName());
+        pictureToBeUpdated.setPrice(updatedPictureDto.getPrice());
+        pictureToBeUpdated.setDescription(updatedPictureDto.getDescription());
+        pictureToBeUpdated.setPictureUrl(updatedPictureDto.getPictureUrl());
+
+        try {
+            pictureRepository.save(pictureToBeUpdated);
+        } catch (Exception e){
+            throw new RuntimeException("Error updating the picture", e);
+        }
     }
 }

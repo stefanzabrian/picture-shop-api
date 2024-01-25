@@ -20,6 +20,7 @@ public class PictureController {
     public PictureController(PictureService pictureService) {
         this.pictureService = pictureService;
     }
+
     @PostMapping("/create")
     public ResponseEntity<?> createPicture(@Valid @RequestBody PictureDto pictureDto) {
 
@@ -31,9 +32,9 @@ public class PictureController {
 
         try {
             newPicture.setId(pictureService.create(newPicture).getId());
-        } catch (IllegalArgumentException e){
+        } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        } catch (RuntimeException e){
+        } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
 
@@ -41,22 +42,24 @@ public class PictureController {
     }
 
     @GetMapping("/all")
-    public ResponseEntity<?> getAllPictures(){
+    public ResponseEntity<?> getAllPictures() {
         try {
             return ResponseEntity.status(HttpStatus.OK).body(pictureService.findAll());
-        } catch (ResourceNotFoundException e ) {
+        } catch (ResourceNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NO_CONTENT).body(e.getMessage());
         }
     }
+
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<?> delete(@PathVariable(value = "id") int id){
-        try{
+    public ResponseEntity<?> delete(@PathVariable(value = "id") int id) {
+        try {
             pictureService.delete(id);
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
         return ResponseEntity.status(HttpStatus.ACCEPTED).body("Picture with id: " + id + "deleted!");
     }
+
     @GetMapping("/{id}")
     public ResponseEntity<?> getById(@PathVariable(value = "id") int id) {
         if (pictureService.findById(id).isEmpty()) {
@@ -64,5 +67,32 @@ public class PictureController {
         }
         Picture picture = pictureService.findById(id).get();
         return ResponseEntity.status(HttpStatus.OK).body(picture);
+    }
+
+    @PatchMapping("/edit/{id}")
+    public ResponseEntity<?> update(
+            @PathVariable(value = "id") int id,
+            @Valid @RequestBody PictureDto pictureDto
+    ) {
+        if (pictureService.findById(id).isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Picture not found with id: " + id);
+        }
+        PictureDto pictureToBeUpdated = new PictureDto();
+        pictureToBeUpdated.setName(pictureDto.getName());
+        pictureToBeUpdated.setPrice(pictureDto.getPrice());
+        pictureToBeUpdated.setDescription(pictureDto.getDescription());
+        pictureToBeUpdated.setPictureUrl(pictureDto.getPictureUrl());
+        pictureToBeUpdated.setId(pictureDto.getId());
+
+        try {
+            pictureService.update(pictureToBeUpdated);
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (IllegalArgumentException e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body("Picture with id: " + id + " updated successfully");
     }
 }
