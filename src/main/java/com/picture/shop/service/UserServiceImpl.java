@@ -1,6 +1,7 @@
 package com.picture.shop.service;
 
 import com.picture.shop.controller.dto.register.RegisterDto;
+import com.picture.shop.controller.exception.ResourceNotFoundException;
 import com.picture.shop.model.Client;
 import com.picture.shop.model.Role;
 import com.picture.shop.model.User;
@@ -54,6 +55,13 @@ public class UserServiceImpl implements UserService {
 
     private Collection<GrantedAuthority> mapRolesToAuthorities(List<Role> roles) {
         return roles.stream().map(role -> new SimpleGrantedAuthority(role.getName())).collect(Collectors.toSet());
+    }
+
+    @Override
+    public int getClientIdByUserEmail(String email) throws ResourceNotFoundException {
+        User user = findByEmail(email).orElseThrow( () -> new ResourceNotFoundException("User with email: " + email + " not found!"));
+        return user.getClient().getId();
+
     }
 
     @Override

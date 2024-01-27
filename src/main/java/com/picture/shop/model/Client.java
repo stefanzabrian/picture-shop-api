@@ -22,10 +22,10 @@ public class Client {
     @Column(name = "address")
     private String address;
     @Column(name = "phone_number")
-    private Integer phoneNumber;
+    private String phoneNumber;
 
 
-    public Client(String firstName, String lastName, String address, Integer phoneNumber) {
+    public Client(String firstName, String lastName, String address, String phoneNumber) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.address = address;
