@@ -1,8 +1,6 @@
 package com.picture.shop.model;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -18,21 +16,19 @@ public class Client {
     @Column(name = "id")
     private Integer id;
     @Column(name = "first_name")
-    @NotNull
-    @NotBlank
     private String firstName;
     @Column(name = "last_name")
-    @NotNull
-    @NotBlank
     private String lastName;
     @Column(name = "address")
-    @NotNull
-    @NotBlank
     private String address;
+    @Column(name = "phone_number")
+    private Integer phoneNumber;
 
-    public Client(String firstName, String lastName, String address) {
+
+    public Client(String firstName, String lastName, String address, Integer phoneNumber) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.address = address;
+        this.phoneNumber = phoneNumber;
     }
 }

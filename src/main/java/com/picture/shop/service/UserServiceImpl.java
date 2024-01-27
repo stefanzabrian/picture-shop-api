@@ -1,6 +1,7 @@
 package com.picture.shop.service;
 
 import com.picture.shop.controller.dto.register.RegisterDto;
+import com.picture.shop.model.Client;
 import com.picture.shop.model.Role;
 import com.picture.shop.model.User;
 import com.picture.shop.repository.UserRepository;
@@ -23,6 +24,7 @@ import java.util.stream.Collectors;
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder passwordEncoder;
+    private final ClientService clientService;
     @PersistenceContext
     private final EntityManager entityManager;
 
@@ -30,9 +32,10 @@ public class UserServiceImpl implements UserService {
     public UserServiceImpl
             (UserRepository userRepository,
              BCryptPasswordEncoder passwordEncoder,
-             EntityManager entityManager) {
+             ClientService clientService, EntityManager entityManager) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.clientService = clientService;
 
         this.entityManager = entityManager;
     }
@@ -75,6 +78,9 @@ public class UserServiceImpl implements UserService {
                         passwordEncoder.encode(newUser.getPassword())
                 );
         user.setRoles(newUser.getRoles());
+        Client client = new Client();
+        clientService.save(client);
+        user.setClient(client);
 
         userRepository.save(user);
     }

@@ -28,6 +28,7 @@ public class Order {
     @NotNull
     @NotBlank
     private Date dateOfOrder;
+    @Enumerated(EnumType.STRING)
     @Column(name = "status")
     private OrderStatus status;
     @Column(name = "total_price")

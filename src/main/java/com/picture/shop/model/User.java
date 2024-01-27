@@ -30,7 +30,7 @@ public class User {
     )
     private List<Role> roles = new ArrayList<>();
     @OneToOne
-    @JoinTable(name = "client_id")
+    @JoinColumn(name = "client_id")
     private Client client;
 
     public User(String email, String password) {
