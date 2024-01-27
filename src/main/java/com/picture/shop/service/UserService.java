@@ -13,4 +13,5 @@ public interface UserService extends UserDetailsService {
 
     void create(RegisterDto newUser);
     void deleteUser(int userId);
+    boolean verifyIdentity(String email, String password);
 }

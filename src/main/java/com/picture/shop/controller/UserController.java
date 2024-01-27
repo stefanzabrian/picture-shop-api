@@ -1,5 +1,6 @@
 package com.picture.shop.controller;
 
+import com.picture.shop.controller.dto.auth.VerifyIdentityDto;
 import com.picture.shop.controller.dto.client.ClientDto;
 import com.picture.shop.controller.exception.JwtValidationException;
 import com.picture.shop.controller.exception.ResourceNotFoundException;
@@ -75,5 +76,20 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
         return ResponseEntity.status(HttpStatus.ACCEPTED).body("Client details updated!");
+    }
+
+    @PostMapping("/current-password")
+    public ResponseEntity<?> verifyIdentity(Principal principal, @Valid @RequestBody VerifyIdentityDto verifyIdentityDto){
+        if(userService.findByEmail(principal.getName()).isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User with email: " + principal.getName() + " not found");
+        }
+        if (verifyIdentityDto.getCurrentPassword().isBlank() || verifyIdentityDto.getCurrentPassword().isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Password Must not empty or blank");
+        }
+        if (userService.verifyIdentity(principal.getName(), verifyIdentityDto.getCurrentPassword())){
+            return ResponseEntity.status(HttpStatus.ACCEPTED).body("User Identity OK");
+        }
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to verify identity due to server error");
+
     }
 }

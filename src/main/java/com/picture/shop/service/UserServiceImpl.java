@@ -105,4 +105,13 @@ public class UserServiceImpl implements UserService {
             throw new EntityNotFoundException(String.format("User with id %d not found", userId));
         }
     }
+
+    @Override
+    public boolean verifyIdentity(String email, String password) {
+        User user = findByEmail(email).get();
+        if (user != null && passwordEncoder.matches(password, user.getPassword())){
+            return true;
+        }
+        return false;
+    }
 }
