@@ -114,4 +114,15 @@ public class UserServiceImpl implements UserService {
         }
         return false;
     }
+
+    @Override
+    public void changePassword(String email, String password) {
+        User user = userRepository.findByEmail(email).orElseThrow();
+        try {
+            user.setPassword(passwordEncoder.encode(password));
+            userRepository.save(user);
+        } catch (Exception e) {
+            throw new RuntimeException(e.getMessage());
+        }
+    }
 }
