@@ -1,6 +1,7 @@
-package com.picture.shop.security;
+package com.picture.shop.security.config;
 
 import com.picture.shop.security.jwt.JwtAuthenticationFilter;
+import org.springframework.boot.autoconfigure.mail.MailProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
