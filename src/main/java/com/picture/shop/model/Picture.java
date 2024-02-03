@@ -1,5 +1,6 @@
 package com.picture.shop.model;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -12,6 +13,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Picture {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,9 +35,10 @@ public class Picture {
     @NotBlank
     private String pictureUrl;
 
-    public Picture(String name, Integer price, String description) {
+    public Picture(String name, Integer price, String description, String pictureUrl) {
         this.name = name;
         this.price = price;
         this.description = description;
+        this.pictureUrl = pictureUrl;
     }
 }
