@@ -1,5 +1,6 @@
 package com.picture.shop.controller;
 
+import com.picture.shop.controller.dto.picture.PictureDto;
 import com.picture.shop.controller.dto.scart.ShoppingCartDto;
 import com.picture.shop.model.Picture;
 import com.picture.shop.service.PictureService;
@@ -10,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -39,6 +41,7 @@ public class ShoppingCartController {
         }
     }
     @GetMapping("/shopping-cart")
+    @ResponseBody
     public ResponseEntity<?> showShoppingCart(){
         ShoppingCartDto shoppingCartDto = new ShoppingCartDto(
                 shoppingCartService.getAllPictures(),
@@ -46,6 +49,11 @@ public class ShoppingCartController {
                 LocalDateTime.now().plusHours(24),
                 LocalDateTime.now().plusHours(92)
         );
+        shoppingCartDto.setProducts(shoppingCartDto.getProductsSerialized());
+        for(Map.Entry<PictureDto,Integer> pic : shoppingCartDto.getProducts().entrySet()){
+
+            System.out.println(pic.getKey().getName());
+        }
 
         if (shoppingCartService.getAllPictures().isEmpty()){
             return ResponseEntity.status(HttpStatus.ACCEPTED).body("No Pictures in the shopping cart");
