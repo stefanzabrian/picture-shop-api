@@ -37,23 +37,41 @@ public class ShoppingCartController {
                 return ResponseEntity.status(HttpStatus.OK).body("Picture Added To Shopping cart & Redirecting to: /shopping-cart!");
             }
             return ResponseEntity.status(HttpStatus.ACCEPTED).body("Picture added to shopping cart");
-        } catch (RuntimeException e){
+        } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
+
     @GetMapping("/shopping-cart")
     @ResponseBody
-    public ResponseEntity<?> showShoppingCart(){
-        ShoppingCartDto shoppingCartDto = new ShoppingCartDto(
-                shoppingCartService.getAllPictures(),
-                shoppingCartService.totalPrice(),
-                LocalDateTime.now().plusHours(24),
-                LocalDateTime.now().plusHours(92)
-        );
+    public ResponseEntity<?> showShoppingCart() {
+        try {
+            ShoppingCartDto shoppingCartDto = new ShoppingCartDto(
+                    shoppingCartService.getAllPictures(),
+                    shoppingCartService.totalPrice(),
+                    LocalDateTime.now().plusHours(24),
+                    LocalDateTime.now().plusHours(92)
+            );
 
-        if (shoppingCartService.getAllPictures().isEmpty()){
-            return ResponseEntity.status(HttpStatus.ACCEPTED).body("No Pictures in the shopping cart");
+            if (shoppingCartService.getAllPictures().isEmpty()) {
+                return ResponseEntity.status(HttpStatus.ACCEPTED).body("No Pictures in the shopping cart");
+            }
+            return ResponseEntity.status(HttpStatus.OK).body(shoppingCartDto);
+        }catch (NullPointerException e) {
+            return ResponseEntity.status(HttpStatus.ACCEPTED).body("All pictures removed in the shopping cart");
         }
-        return ResponseEntity.status(HttpStatus.OK).body(shoppingCartDto);
+    }
+
+    @PostMapping("/shopping-cart-remove/{id}")
+    public ResponseEntity<?> removePictureFromShoppingCart(@PathVariable(value = "id") int id) {
+        Optional<Picture> optionalPicture = pictureService.findById(id);
+        try {
+            if (optionalPicture.isPresent()) {
+                shoppingCartService.removePicture(id);
+            }
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to remove picture");
+        }
+        return ResponseEntity.status(HttpStatus.OK).body("Picture removed from cart");
     }
 }

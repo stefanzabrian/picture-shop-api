@@ -1,6 +1,5 @@
 package com.picture.shop.service;
 
-import com.picture.shop.controller.dto.picture.PictureDto;
 import com.picture.shop.controller.dto.picture.ShoppingCartPictureDto;
 import com.picture.shop.model.Picture;
 import com.picture.shop.repository.OrderRepository;
@@ -82,5 +81,20 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
             totalPrice += entry.getValue() * entry.getKey().getPrice();
         }
         return totalPrice;
+    }
+
+    @Override
+    public void removePicture(int id) {
+        Iterator<Map.Entry<ShoppingCartPictureDto, Integer>> iterator = cart.entrySet().iterator();
+        while (iterator.hasNext()) {
+            Map.Entry<ShoppingCartPictureDto, Integer> entry = iterator.next();
+            if (entry.getKey().getId() == id) {
+                if (entry.getKey().getQuantity() == 1) {
+                    iterator.remove(); // Use iterator's remove method
+                } else {
+                    cart.put(entry.getKey(), cart.get(entry.getKey()) - 1);
+                }
+            }
+        }
     }
 }
