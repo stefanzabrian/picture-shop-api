@@ -17,10 +17,9 @@ public class PictureOrder {
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    @Column(name = "product_price")
+    @Column(name = "quantity")
     @NotNull
-    @NotBlank
-    private Integer productPrice;
+    private Integer quantity;
     @ManyToOne
     @JoinColumn(name = "picture_id")
     private Picture picture;
@@ -28,7 +27,7 @@ public class PictureOrder {
     @JoinColumn(name = "order_id")
     private Order order;
 
-    public PictureOrder(Integer productPrice) {
-        this.productPrice = productPrice;
+    public PictureOrder(Integer quantity) {
+        this.quantity = quantity;
     }
 }

@@ -3,6 +3,7 @@ package com.picture.shop.controller;
 import com.picture.shop.controller.dto.picture.PictureDto;
 import com.picture.shop.controller.dto.picture.ShoppingCartPictureDto;
 import com.picture.shop.controller.dto.scart.ShoppingCartDto;
+import com.picture.shop.controller.exception.ResourceNotFoundException;
 import com.picture.shop.model.Picture;
 import com.picture.shop.service.PictureService;
 import com.picture.shop.service.ShoppingCartService;
@@ -11,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Optional;
@@ -73,5 +75,19 @@ public class ShoppingCartController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to remove picture");
         }
         return ResponseEntity.status(HttpStatus.OK).body("Picture removed from cart");
+    }
+
+    @GetMapping("/cart-checkout")
+    public ResponseEntity<?> checkOutCart(Principal principal) {
+        try {
+            System.out.println(principal.getName().trim());
+            shoppingCartService.checkOut(principal.getName().trim());
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body("Order Placed!");
     }
 }

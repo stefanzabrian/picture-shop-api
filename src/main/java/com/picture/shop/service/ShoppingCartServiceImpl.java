@@ -1,7 +1,9 @@
 package com.picture.shop.service;
 
 import com.picture.shop.controller.dto.picture.ShoppingCartPictureDto;
-import com.picture.shop.model.Picture;
+import com.picture.shop.controller.exception.ResourceNotFoundException;
+import com.picture.shop.model.*;
+import com.picture.shop.model.constant.OrderStatus;
 import com.picture.shop.repository.OrderRepository;
 import com.picture.shop.repository.PictureOrderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +12,8 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.WebApplicationContext;
 
+import javax.mail.MessagingException;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
@@ -17,7 +21,6 @@ import java.util.*;
 public class ShoppingCartServiceImpl implements ShoppingCartService {
     private static final String ORDER_PREFIX = "PIC-ORD-";
     private final Map<ShoppingCartPictureDto, Integer> cart = new LinkedHashMap<>();
-    private final Set<ShoppingCartPictureDto> setCart = new HashSet<>();
     private final UserService userService;
     private final PictureOrderRepository pictureOrderRepository;
     private final OrderRepository orderRepository;
@@ -96,5 +99,34 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
                 }
             }
         }
+    }
+
+    @Override
+    public void checkOut(String userEmail) throws ResourceNotFoundException {
+        User user = userService.findByEmail(userEmail)
+                .orElseThrow(()-> new IllegalArgumentException("User not found"));
+        Client userProfile = user.getClient();
+        if(userProfile == null) {
+            throw new ResourceNotFoundException(("User profile does not exists"));
+        }
+
+        Order newOrder = new Order();
+        newOrder.setOrderNumber((ORDER_PREFIX + new Random().nextInt(100000)));
+        newOrder.setDateOfOrder(new Date());
+        newOrder.setStatus(OrderStatus.PLACED);
+        newOrder.setTotalPrice(totalPrice());
+        newOrder.setClient(userProfile);
+        orderRepository.save(newOrder);
+
+      for(Map.Entry<ShoppingCartPictureDto, Integer> entry : cart.entrySet()) {
+          PictureOrder pictureOrder = new PictureOrder();
+          pictureOrder.setOrder(newOrder);
+          Optional<Picture> picture = pictureService.findById(entry.getKey().getId());
+          picture.ifPresent(
+                  pictureOrder::setPicture);
+          pictureOrder.setQuantity(entry.getValue());
+          pictureOrderRepository.save(pictureOrder);
+          cart.clear();
+      }
     }
 }

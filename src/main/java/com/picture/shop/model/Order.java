@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity
@@ -23,23 +24,20 @@ public class Order {
     @Column(name = "order_number")
     @NotNull
     @NotBlank
-    private Integer orderNumber;
+    private String orderNumber;
     @Column(name = "date_io_order")
     @NotNull
-    @NotBlank
     private Date dateOfOrder;
-    @Enumerated(EnumType.STRING)
     @Column(name = "status")
     private OrderStatus status;
     @Column(name = "total_price")
     @NotNull
-    @NotBlank
     private Integer totalPrice;
     @ManyToOne
     @JoinColumn(name = "client_id")
     private Client client;
 
-    public Order(Integer orderNumber, Date dateOfOrder, OrderStatus status, Integer totalPrice) {
+    public Order(String orderNumber, Date  dateOfOrder, OrderStatus status, Integer totalPrice) {
         this.orderNumber = orderNumber;
         this.dateOfOrder = dateOfOrder;
         this.status = status;
