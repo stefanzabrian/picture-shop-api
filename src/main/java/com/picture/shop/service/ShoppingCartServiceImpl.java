@@ -106,7 +106,10 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         User user = userService.findByEmail(userEmail)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
         Client userProfile = user.getClient();
-        if (userProfile.getFirstName() == null || userProfile.getLastName() == null || userProfile.getAddress() == null || userProfile.getPhoneNumber() == null) {
+        if (userProfile.getFirstName() == null ||
+                userProfile.getLastName() == null ||
+                userProfile.getAddress() == null ||
+                userProfile.getPhoneNumber() == null) {
             throw new ResourceNotFoundException(("User profile does not exists"));
         }
 

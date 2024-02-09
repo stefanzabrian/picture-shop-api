@@ -16,6 +16,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.mail.MessagingException;
+import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -26,6 +28,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder passwordEncoder;
     private final ClientService clientService;
+    private final MailService mailService;
     @PersistenceContext
     private final EntityManager entityManager;
 
@@ -33,10 +36,11 @@ public class UserServiceImpl implements UserService {
     public UserServiceImpl
             (UserRepository userRepository,
              BCryptPasswordEncoder passwordEncoder,
-             ClientService clientService, EntityManager entityManager) {
+             ClientService clientService, MailService mailService, EntityManager entityManager) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.clientService = clientService;
+        this.mailService = mailService;
 
         this.entityManager = entityManager;
     }
@@ -128,6 +132,16 @@ public class UserServiceImpl implements UserService {
             userRepository.save(user);
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
+        }
+        try {
+            mailService.sendEmail(
+                    "picture-shop@gmail.com",
+                    email,
+                    "Password updated successfully!",
+                    "Password for account with username " + email + " updated successfully!"
+            );
+        } catch (MessagingException e) {
+            e.printStackTrace();
         }
     }
 }
