@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.context.WebApplicationContext;
 
 import javax.mail.MessagingException;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.*;
 
 @Service
@@ -104,9 +104,9 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     @Override
     public void checkOut(String userEmail) throws ResourceNotFoundException {
         User user = userService.findByEmail(userEmail)
-                .orElseThrow(()-> new IllegalArgumentException("User not found"));
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
         Client userProfile = user.getClient();
-        if(userProfile == null) {
+        if (userProfile == null) {
             throw new ResourceNotFoundException(("User profile does not exists"));
         }
 
@@ -118,15 +118,27 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         newOrder.setClient(userProfile);
         orderRepository.save(newOrder);
 
-      for(Map.Entry<ShoppingCartPictureDto, Integer> entry : cart.entrySet()) {
-          PictureOrder pictureOrder = new PictureOrder();
-          pictureOrder.setOrder(newOrder);
-          Optional<Picture> picture = pictureService.findById(entry.getKey().getId());
-          picture.ifPresent(
-                  pictureOrder::setPicture);
-          pictureOrder.setQuantity(entry.getValue());
-          pictureOrderRepository.save(pictureOrder);
-          cart.clear();
-      }
+        for (Map.Entry<ShoppingCartPictureDto, Integer> entry : cart.entrySet()) {
+            PictureOrder pictureOrder = new PictureOrder();
+            pictureOrder.setOrder(newOrder);
+            Optional<Picture> picture = pictureService.findById(entry.getKey().getId());
+            picture.ifPresent(
+                    pictureOrder::setPicture);
+            pictureOrder.setQuantity(entry.getValue());
+            pictureOrderRepository.save(pictureOrder);
+        }
+        try {
+            mailService.sendEmail(
+                    "picture-shop@gmail.com",
+                    userEmail,
+                    "New picture order placed!",
+                    "Order Number: " + newOrder.getOrderNumber() +
+                            "\nOrder Total amount: " + newOrder.getTotalPrice() +
+                            "\nExpected to be delivered by: " + LocalDate.now().plusDays(4)
+            );
+        } catch (MessagingException e) {
+            e.printStackTrace();
+        }
+        cart.clear();
     }
 }

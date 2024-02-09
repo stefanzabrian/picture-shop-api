@@ -1,7 +1,5 @@
 package com.picture.shop.controller;
 
-import com.picture.shop.controller.dto.picture.PictureDto;
-import com.picture.shop.controller.dto.picture.ShoppingCartPictureDto;
 import com.picture.shop.controller.dto.scart.ShoppingCartDto;
 import com.picture.shop.controller.exception.ResourceNotFoundException;
 import com.picture.shop.model.Picture;
@@ -12,9 +10,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.mail.MessagingException;
 import java.security.Principal;
 import java.time.LocalDateTime;
-import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -52,7 +50,7 @@ public class ShoppingCartController {
                     shoppingCartService.getAllPictures(),
                     shoppingCartService.totalPrice(),
                     LocalDateTime.now().plusHours(24),
-                    LocalDateTime.now().plusHours(92)
+                    LocalDateTime.now().plusHours(96)
             );
 
             if (shoppingCartService.getAllPictures().isEmpty()) {
@@ -87,6 +85,8 @@ public class ShoppingCartController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (MessagingException e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error Sending the Mail");
         }
         return ResponseEntity.status(HttpStatus.ACCEPTED).body("Order Placed!");
     }
