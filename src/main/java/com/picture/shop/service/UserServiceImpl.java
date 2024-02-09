@@ -70,6 +70,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public User findByClient(Client client) {
+        return userRepository.findByClient(client);
+    }
+
+    @Override
     public void create(RegisterDto newUser) {
         if (newUser.getEmail().isEmpty() && newUser.getEmail().isBlank()) {
             throw new IllegalArgumentException("Email must not be Empty or Blank!");
