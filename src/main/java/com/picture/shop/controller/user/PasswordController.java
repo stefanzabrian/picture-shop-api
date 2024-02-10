@@ -2,6 +2,7 @@ package com.picture.shop.controller.user;
 
 import com.picture.shop.controller.dto.auth.ChangePasswordDto;
 import com.picture.shop.controller.dto.auth.VerifyIdentityDto;
+import com.picture.shop.controller.exception.ResourceNotFoundException;
 import com.picture.shop.security.jwt.JwtGenerator;
 import com.picture.shop.service.PasswordService;
 import com.picture.shop.service.UserService;
@@ -50,8 +51,8 @@ public class PasswordController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to send email");
         }
     }
-    @PostMapping("/reset-password")
-    public ResponseEntity<?> resetPassword(@RequestParam("token") String token, Principal principal, @Valid @RequestBody ChangePasswordDto changePasswordDto){
+    @PostMapping("/update-password")
+    public ResponseEntity<?> updatePassword(@RequestParam("token") String token, Principal principal, @Valid @RequestBody ChangePasswordDto changePasswordDto){
         boolean validated = jwtGenerator.validatePassToken(token);
         if (!validated) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Token expired or invalid");
@@ -67,13 +68,48 @@ public class PasswordController {
         }
         try {
             userService.changePassword(principal.getName(), changePasswordDto.getNewPassword());
+            passwordService.resetPassToken();
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         } catch (MessagingException e) {
             return ResponseEntity.status(HttpStatus.ACCEPTED).body("Password changed but failed to send notification");
         }
         return ResponseEntity.status(HttpStatus.OK).body("Password changed");
-
+    }
+    @PostMapping("/forgot-password")
+    public ResponseEntity<?> forgotPassword(@Valid @RequestBody VerifyIdentityDto verifyIdentityDto){
+        try {
+            passwordService.forgotPassword(verifyIdentityDto.getCurrentPassword());
+        } catch (ResourceNotFoundException e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email dont exists");
+        } catch (MessagingException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to send email");
+        }
+        String token = passwordService.getToken();
+        return ResponseEntity.status(HttpStatus.OK).body(token);
+    }
+    @PostMapping("/reset-password")
+    public ResponseEntity<?> resetPassword(@RequestParam("token") String token, @Valid @RequestBody ChangePasswordDto changePasswordDto){
+        boolean validated = jwtGenerator.validatePassToken(token);
+        if (!validated) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Token expired or invalid");
+        }
+        if (changePasswordDto.getNewPassword().isEmpty() ||
+                changePasswordDto.getNewPassword().isBlank() ||
+                changePasswordDto.getConfirmPassword().isEmpty() ||
+                changePasswordDto.getConfirmPassword().isBlank()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Password and Confirm Password must not empty or null");
+        }
+        try {
+            String email = jwtGenerator.getEmailFromPJWT(token);
+            userService.changePassword(email, changePasswordDto.getNewPassword());
+            passwordService.resetPassToken();
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        } catch (MessagingException e) {
+            return ResponseEntity.status(HttpStatus.ACCEPTED).body("Password changed but failed to send notification");
+        }
+        return ResponseEntity.status(HttpStatus.OK).body("Password changed");
     }
 
 }

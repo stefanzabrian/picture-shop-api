@@ -60,6 +60,8 @@ public class SecurityConfig {
                                 .requestMatchers("/register/admin").hasAnyAuthority("ADMIN")
                                 .requestMatchers("/login").permitAll()
                                 .requestMatchers("/logout").permitAll()
+                                .requestMatchers("/user/forgot-password").permitAll()
+                                .requestMatchers("/user/reset-password").permitAll()
                                 .anyRequest().authenticated()
                 );
         http

@@ -1,5 +1,6 @@
 package com.picture.shop.service;
 
+import com.picture.shop.controller.exception.ResourceNotFoundException;
 import com.picture.shop.model.User;
 import com.picture.shop.security.jwt.JwtGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +36,16 @@ public class PasswordServiceImpl implements PasswordService {
     }
 
     @Override
+    public void resetPassToken() {
+        this.passToken = "";
+    }
+    @Override
+    public String getToken() {
+        return passToken;
+    }
+
+
+    @Override
     public boolean verifyIdentity(String email, String password) {
         Optional<User> user = userService.findByEmail(email);
         if (user.isPresent() && passwordEncoder.matches(password, user.get().getPassword())) {
@@ -54,10 +65,28 @@ public class PasswordServiceImpl implements PasswordService {
             mailService.sendEmail("picture-shop-security@gmail.com",
                     email,
                     "Password reset Link",
-                    "Click the following link to reset your password : http://localhost:5173/user/reset-password?token=" + passToken);
+                    "Click the following link to reset your password : http://localhost:5173/user/update-password?token=" + passToken);
         } catch (MessagingException e) {
             throw new MessagingException("Failed to send mail");
         }
         return passToken;
+    }
+
+    @Override
+    public void forgotPassword(String email) throws MessagingException, ResourceNotFoundException {
+        Optional<User> user = userService.findByEmail(email);
+        if (user.isPresent()) {
+            passToken = jwtGenerator.generateForgotPassToken(email);
+            try {
+                mailService.sendEmail("picture-shop-security@gmail.com",
+                        email,
+                        "Forgot Password requested a reset Link",
+                        "Click the following link to reset your password : http://localhost:5173/user/reset-password?token=" + passToken);
+            } catch (MessagingException e) {
+                throw new MessagingException("Failed to send mail");
+            }
+        } else {
+            throw new ResourceNotFoundException("User not found");
+        }
     }
 }
