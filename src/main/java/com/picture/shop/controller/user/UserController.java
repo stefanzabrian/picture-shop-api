@@ -1,4 +1,4 @@
-package com.picture.shop.controller;
+package com.picture.shop.controller.user;
 
 import com.picture.shop.controller.dto.auth.ChangePasswordDto;
 import com.picture.shop.controller.dto.auth.VerifyIdentityDto;
@@ -77,37 +77,5 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
         return ResponseEntity.status(HttpStatus.ACCEPTED).body("Client details updated!");
-    }
-
-    @PostMapping("/current-password")
-    public ResponseEntity<?> verifyIdentity(Principal principal, @Valid @RequestBody VerifyIdentityDto verifyIdentityDto){
-        if(userService.findByEmail(principal.getName()).isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User with email: " + principal.getName() + " not found");
-        }
-        if (verifyIdentityDto.getCurrentPassword().isBlank() || verifyIdentityDto.getCurrentPassword().isEmpty()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Password Must not empty or blank");
-        }
-        if (userService.verifyIdentity(principal.getName(), verifyIdentityDto.getCurrentPassword())){
-            return ResponseEntity.status(HttpStatus.ACCEPTED).body("User Identity OK");
-        }
-        return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("Failed to verify identity due to bad credentials");
-    }
-    @PostMapping("/change-password")
-    public ResponseEntity<?> changePassword(Principal principal, @Valid @RequestBody ChangePasswordDto changePasswordDto){
-        if (changePasswordDto.getNewPassword().isEmpty() ||
-                changePasswordDto.getNewPassword().isBlank() ||
-                changePasswordDto.getConfirmPassword().isEmpty() ||
-                changePasswordDto.getConfirmPassword().isBlank()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Password and Confirm Password must not empty or null");
-        }
-        if (userService.findByEmail(principal.getName()).isEmpty()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User with email: " + principal.getName() + " not found");
-        }
-        try {
-            userService.changePassword(principal.getName(), changePasswordDto.getNewPassword());
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
-        }
-        return ResponseEntity.status(HttpStatus.OK).body("Password Updated!");
     }
 }

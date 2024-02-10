@@ -1,4 +1,4 @@
-package com.picture.shop.controller;
+package com.picture.shop.controller.user;
 
 import com.picture.shop.controller.dto.register.RegisterDto;
 import com.picture.shop.model.Role;

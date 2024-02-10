@@ -1,4 +1,4 @@
-package com.picture.shop.controller;
+package com.picture.shop.controller.user;
 
 import com.picture.shop.controller.dto.auth.AuthResponseDto;
 import com.picture.shop.controller.dto.login.LoginDto;

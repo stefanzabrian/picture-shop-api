@@ -17,7 +17,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.mail.MessagingException;
-import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -125,13 +124,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void changePassword(String email, String password) {
+    public void changePassword(String email, String password) throws MessagingException {
         User user = userRepository.findByEmail(email).orElseThrow();
         try {
             user.setPassword(passwordEncoder.encode(password));
             userRepository.save(user);
         } catch (Exception e) {
-            throw new RuntimeException(e.getMessage());
+            throw new RuntimeException("Failed to save new password");
         }
         try {
             mailService.sendEmail(
@@ -141,7 +140,7 @@ public class UserServiceImpl implements UserService {
                     "Password for account with username " + email + " updated successfully!"
             );
         } catch (MessagingException e) {
-            e.printStackTrace();
+            throw new MessagingException();
         }
     }
 }

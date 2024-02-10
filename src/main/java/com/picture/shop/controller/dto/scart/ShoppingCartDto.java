@@ -1,9 +1,7 @@
 package com.picture.shop.controller.dto.scart;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.picture.shop.controller.dto.picture.PictureDto;
 import com.picture.shop.controller.dto.picture.ShoppingCartPictureDto;
-import com.picture.shop.model.Picture;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

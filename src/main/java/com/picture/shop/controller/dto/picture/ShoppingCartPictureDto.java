@@ -12,10 +12,10 @@ import lombok.Setter;
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ShoppingCartPictureDto extends PictureDto{
-    private Integer Quantity;
+    private Integer quantity;
 
     public ShoppingCartPictureDto(String name, Integer price, String description, String pictureUrl, Integer id, Integer quantity) {
         super(name, price, description, pictureUrl, id);
-        Quantity = quantity;
+        this.quantity = quantity;
     }
 }

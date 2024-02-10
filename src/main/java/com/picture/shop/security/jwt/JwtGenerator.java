@@ -11,6 +11,19 @@ import java.util.Date;
 
 @Component
 public class JwtGenerator {
+    public String generatePassToken(Authentication authentication) {
+        String email = authentication.getName();
+        Date currentDate = new Date();
+        Date expireDate = new Date(currentDate.getTime() + SecurityConstants.JWT_EXPIRATION);
+
+        String token = Jwts.builder()
+                .setSubject(email)
+                .setIssuedAt(currentDate)
+                .setExpiration(expireDate)
+                .signWith(SignatureAlgorithm.HS512,SecurityConstants.PJWT_SECRET)
+                .compact();
+        return token;
+    }
     public String generateToken(Authentication authentication) {
         String email = authentication.getName();
         Date currentDate = new Date();
@@ -42,6 +55,17 @@ public class JwtGenerator {
             return true;
         } catch (Exception e) {
             throw new JwtValidationException("JWT was expired or incorrect");
+        }
+    }
+    public boolean validatePassToken(String token){
+        try {
+            Jwts
+                    .parser()
+                    .setSigningKey(SecurityConstants.PJWT_SECRET)
+                    .parseClaimsJws(token);
+            return true;
+        } catch (Exception e) {
+            throw new JwtValidationException("PJWT was expired or incorrect");
         }
     }
 }
