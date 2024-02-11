@@ -88,7 +88,7 @@ public class OrderServiceImpl implements OrderService {
                 orderDto.setTotalPrice(clientOrder.get().getTotalPrice());
                 orderDto.setStatus(clientOrder.get().getStatus());
                 orderDto.setClient(clientOrder.get().getClient());
-                orderDto.setEmail(email);
+                orderDto.setEmail(userService.findByClient(orderDto.getClient()).getEmail());
 
                 Set<PictureDto> pictureDtoSet = new HashSet<>();
 
