@@ -15,6 +15,8 @@ public interface OrderService {
     List<OrderDto> findByClientId(int id);
 
     Optional<Order> findById(int id);
+    OrderDto getOrderById(int id, String email) throws ResourceNotFoundException;
 
     SingleOrderDto getSingleOrder(int id, String email) throws ResourceNotFoundException, NoSuchFileException;
+    void updateOrder(int id, OrderDto orderDto) throws ResourceNotFoundException;
 }

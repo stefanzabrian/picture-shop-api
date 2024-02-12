@@ -9,6 +9,7 @@ import com.picture.shop.model.Order;
 import com.picture.shop.model.PictureOrder;
 import com.picture.shop.model.User;
 import com.picture.shop.repository.OrderRepository;
+import org.hibernate.ResourceClosedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +18,7 @@ import java.util.*;
 
 @Service
 public class OrderServiceImpl implements OrderService {
+
     private final PictureOrderService pictureOrderService;
     private final OrderRepository orderRepository;
     private final ClientService clientService;
@@ -40,6 +42,7 @@ public class OrderServiceImpl implements OrderService {
         return newList;
     }
 
+    @Override
     public List<OrderDto> findByClientId(int id) {
         List<OrderDto> newList = new ArrayList<>();
         for (Order order :
@@ -66,6 +69,7 @@ public class OrderServiceImpl implements OrderService {
         newList.add(newOrder);
     }
 
+    @Override
     public SingleOrderDto getSingleOrder(int id, String email) throws ResourceNotFoundException, NoSuchFileException {
         Optional<User> user = userService.findByEmail(email);
         if (user.isEmpty()) {
@@ -108,5 +112,30 @@ public class OrderServiceImpl implements OrderService {
                 return orderDto;
             }
         }
+    }
+
+    @Override
+    public void updateOrder(int id, OrderDto orderDto) throws ResourceNotFoundException {
+        Order order = findById(id).orElseThrow(()-> new ResourceNotFoundException("Order don't exists"));
+        order.setStatus(orderDto.getStatus());
+        try {
+            orderRepository.save(order);
+        } catch (RuntimeException e){
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public OrderDto getOrderById(int id, String email) throws ResourceNotFoundException {
+        Order order = findById(id).orElseThrow(() -> new ResourceNotFoundException("Order don't exists"));
+        OrderDto orderDto = new OrderDto();
+        orderDto.setId(order.getId());
+        orderDto.setOrderNumber(order.getOrderNumber());
+        orderDto.setDateOfOrder(order.getDateOfOrder());
+        orderDto.setStatus(order.getStatus());
+        orderDto.setTotalPrice(order.getTotalPrice());
+        orderDto.setClient(order.getClient());
+        orderDto.setEmail(email);
+        return orderDto;
     }
 }

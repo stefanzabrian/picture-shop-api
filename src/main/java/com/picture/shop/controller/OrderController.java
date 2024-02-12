@@ -10,10 +10,7 @@ import com.picture.shop.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.nio.file.NoSuchFileException;
 import java.security.Principal;
@@ -60,9 +57,34 @@ public class OrderController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User dont exists");
         } catch (IllegalArgumentException e){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User Client dont exists");
-        } catch (NoSuchFileException e){
+        } catch (NoSuchFileException e) {
             return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Client has no Order with id: " + id);
         }
-
+    }
+    @GetMapping("/update-order/{id}")
+    public ResponseEntity<?> getUpdateOrder(@PathVariable("id") int id, Principal principal){
+        if (userService.findByEmail(principal.getName()).isEmpty()){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User dont exists");
+        }
+        try {
+            OrderDto orderDto = orderService.getOrderById(id, principal.getName());
+            return ResponseEntity.status(HttpStatus.OK).body(orderDto);
+        } catch (ResourceNotFoundException e){
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Order dont exists with id: " + id);
+        }
+    }
+    @PatchMapping("/update-order/{id}")
+    public ResponseEntity<?> updateOrder(@PathVariable("id") int id, @RequestBody OrderDto orderDto) {
+        if (orderDto.getStatus() == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Status not completed");
+        }
+        try {
+            orderService.updateOrder(id, orderDto);
+            return ResponseEntity.status(HttpStatus.OK).body("Order Updated");
+        } catch (ResourceNotFoundException e){
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Order dont exists");
+        } catch (RuntimeException e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to update the order!");
+        }
     }
 }
